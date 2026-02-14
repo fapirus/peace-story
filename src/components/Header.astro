@@ -7,11 +7,12 @@ const isBlogPage = Astro.url.pathname.startsWith("/blog/");
 ---
 
 <header
-	class="bg-background/20 text-foreground/75 text-md sticky top-0 z-40 mb-10 w-full backdrop-blur-sm backdrop-filter"
+	data-site-header
+	class="group/header bg-background/70 text-foreground/80 text-md sticky top-0 z-40 mb-10 w-full border-b border-foreground/5 transition-all duration-200 ease-out data-[scrolled=true]:bg-background data-[scrolled=true]:text-foreground data-[scrolled=true]:shadow-sm dark:bg-background/60 dark:border-foreground/10 dark:data-[scrolled=true]:bg-muted/40"
 >
 	{isBlogPage && <SkipToContent slot="skip-to-content" />}
 	<nav
-		class="mx-auto flex h-16 items-center justify-between max-sm:px-4 sm:max-w-sm md:max-w-xl lg:max-w-3xl"
+		class="mx-auto flex h-16 items-center justify-between transition-[height,padding] duration-200 ease-out max-sm:px-4 sm:max-w-sm md:max-w-xl lg:max-w-3xl group-data-[scrolled=true]/header:h-14"
 	>
 		<a href="/" class="flex items-center space-x-1.5">
 			<Logo class="h-6 w-6 rounded-full p-0.5" />
@@ -22,3 +23,25 @@ const isBlogPage = Astro.url.pathname.startsWith("/blog/");
 		</div>
 	</nav>
 </header>
+
+<script>
+	const setupHeaderState = () => {
+		const header = document.querySelector(
+			"[data-site-header]",
+		) as HTMLElement | null;
+
+		if (!header) return;
+
+		const updateHeaderState = () => {
+			header.dataset.scrolled = window.scrollY > 16 ? "true" : "false";
+		};
+
+		// Avoid duplicate listeners when navigating between pages.
+		document.removeEventListener("scroll", updateHeaderState);
+		document.addEventListener("scroll", updateHeaderState, { passive: true });
+
+		updateHeaderState();
+	};
+
+	document.addEventListener("astro:page-load", setupHeaderState);
+</script>
