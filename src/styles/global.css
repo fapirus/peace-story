@@ -30,6 +30,9 @@
 	--color-muted: #0a0a0a;
 	--color-code: #24292e;
 	--color-code-text: #f6f8fa;
+
+	/* Accent Colors */
+	--color-ultramarine: #3f00ff;
 }
 
 @layer theme {
@@ -40,6 +43,9 @@
 		--color-muted: #cacaca;
 		--color-code: #f6f8fa;
 		--color-code-text: #24292e;
+
+		/* Accent Colors */
+		--color-ultramarine: #3f00ff;
 	}
 }
 
