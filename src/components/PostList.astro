@@ -12,5 +12,7 @@ const { blogs, locale } = Astro.props;
 ---
 
 <div class="group space-y-2">
-	{blogs.map((blog) => <Post blog={blog} locale={locale} />)}
+	{blogs.map((blog) => (
+		<Post blog={blog} locale={locale} />
+	))}
 </div>

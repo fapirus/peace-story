@@ -1,0 +1,71 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import PostList from "@/components/PostList.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+import { slugifyTag } from "@/utils/tags";
+import type { LocaleCode } from "@/i18n/config";
+
+interface PathMeta {
+	label: string;
+	locale: LocaleCode;
+	slug: string;
+}
+
+export const getStaticPaths = async () => {
+	const posts = await getCollection("blogs");
+	const map = new Map<string, PathMeta>();
+
+	posts.forEach((post) => {
+		post.data.tags?.forEach((tag) => {
+			const slug = slugifyTag(tag);
+			const key = `${post.data.locale}:${slug}`;
+			if (!map.has(key)) {
+				map.set(key, {
+					label: tag,
+					locale: post.data.locale,
+					slug,
+				});
+			}
+		});
+	});
+
+	return Array.from(map.values()).map((entry) => ({
+		params: { lang: entry.locale, tag: entry.slug },
+		props: { tagLabel: entry.label, locale: entry.locale, slug: entry.slug },
+	}));
+};
+
+type Props = {
+	tagLabel: string;
+	locale: LocaleCode;
+	slug: string;
+};
+
+const { tagLabel, locale, slug } = Astro.props;
+
+const posts = (await getCollection("blogs"))
+	.filter((entry) => entry.data.locale === locale)
+	.filter((entry) => entry.data.tags?.some((tag) => slugifyTag(tag) === slug));
+
+const headingText = locale === "ko" ? `${tagLabel} 태그` : `Tag: ${tagLabel}`;
+const emptyText =
+	locale === "ko"
+		? "이 태그로 작성된 글이 아직 없습니다."
+		: "No posts have been published with this tag yet.";
+---
+
+<Layout locale={locale} title={`${headingText} | Kiri`}>
+	<main class="mx-auto my-8 flex flex-col gap-4 max-sm:px-4 sm:max-w-sm md:max-w-xl lg:max-w-3xl">
+		<header class="text-center">
+			<p class="text-sm uppercase tracking-[0.35em] text-foreground/50">
+				{headingText}
+			</p>
+		</header>
+
+		{posts.length === 0 ? (
+			<p class="text-center text-sm text-muted">{emptyText}</p>
+		) : (
+			<PostList blogs={posts} locale={locale} />
+		)}
+	</main>
+</Layout>
