@@ -1,0 +1,74 @@
+---
+title: Markdown (.md) 파일 편집 가이드
+author: 익명
+avatar: ../images/default-avatar.webp
+tags: ["Markdown", "문서화", "작성"]
+publishedDate: 2025-10-02
+coverImage: ../images/default-background.webp
+excerpt: Markdown 문서를 빠르게 편집할 수 있도록 필수 문법과 활용 팁을 정리한 안내서입니다.
+locale: ko
+translationKey: guide-editing-md-files
+slugSegment: guide-to-editing-md-files
+---
+
+Markdown(.md)은 사람에게 읽기 쉬운 문법으로 작성한 뒤 손쉽게 HTML로 변환할 수 있는 경량 마크업 언어입니다. 문서나 블로그 글, 개발 노트를 작성할 때 Markdown의 핵심 요소를 익혀두면 훨씬 빠르고 일관된 문서를 만들 수 있습니다.
+
+## 기본 텍스트 스타일
+
+문장에 간단한 기호를 붙여 강조를 표현합니다.
+
+- **굵게:** `**텍스트**` 혹은 `__텍스트__`
+- *기울임:* `*텍스트*` 혹은 `_텍스트_`
+- ~~취소선~~: `~~텍스트~~`
+
+| Markdown | 출력 |
+| :--- | :--- |
+| `**Bold**` | **Bold** |
+| `_Italics_` | *Italics* |
+| `~~Strike~~` | ~~Strike~~ |
+
+## 제목 레벨 이해하기
+
+해시(`#`) 기호 개수로 제목 깊이를 정합니다.
+
+### H1 - 문서의 타이틀
+
+`# 제목`
+
+### H2 - 주요 섹션
+
+`## 섹션`
+
+### H3 이하 - 하위 구조
+
+`### 소제목`
+
+## 목록과 링크
+
+- 순서 없는 목록: `*`, `+`, `-` 뒤에 공백
+- 순서 있는 목록: `1.`, `2.` 처럼 숫자와 점을 사용
+
+링크는 `[표시 텍스트](https://example.com)`처럼 작성합니다.
+
+## 인용과 코드
+
+> `>` 기호를 이용하면 인용문을 만들 수 있습니다.
+
+인라인 코드는 `` `code` ``로 감싸고, 여러 줄 코드는 ``` ``` 블록과 언어명을 사용합니다.
+
+````markdown
+```js
+console.log("Hello Markdown");
+```
+````
+
+## 빠른 요약
+
+| 기능 | 예시 |
+| :--- | :--- |
+| H1 | `# Title` |
+| 굵게 | `**text**` |
+| 링크 | `[Text](URL)` |
+| 코드 블록 | ``` ``` |
+
+이 규칙만 기억해도 대부분의 Markdown 문서를 자연스럽게 작성하고 유지보수할 수 있습니다.

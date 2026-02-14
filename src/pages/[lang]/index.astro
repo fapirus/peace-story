@@ -1,0 +1,32 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import PostList from "@/components/PostList.astro";
+import { getCollection } from "astro:content";
+import { SUPPORTED_LOCALES, resolveLocale } from "@/i18n/config";
+
+export const getStaticPaths = () =>
+	SUPPORTED_LOCALES.map(({ code }) => ({
+		params: { lang: code },
+	}));
+
+const locale = resolveLocale(Astro.params.lang);
+
+const blogs = (await getCollection("blogs"))
+	.filter((entry) => entry.data.locale === locale)
+	.sort(
+		(a, b) =>
+			new Date(b.data.publishedDate).valueOf() -
+			new Date(a.data.publishedDate).valueOf(),
+	);
+
+const headingText = locale === "ko" ? "블로그" : "Blogs";
+---
+
+<Layout locale={locale}>
+	<main
+		class="mx-auto my-5 flex flex-col max-sm:px-4 sm:max-w-sm md:max-w-xl lg:max-w-3xl"
+	>
+		<h1 class="mb-4 text-left text-3xl max-sm:text-2xl">{headingText}</h1>
+		<PostList blogs={blogs} locale={locale} />
+	</main>
+</Layout>

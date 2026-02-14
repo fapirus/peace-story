@@ -1,20 +1,5 @@
 ---
-import Layout from "@/layouts/Layout.astro";
-import PostList from "@/components/PostList.astro";
-import { getCollection } from "astro:content";
+import { DEFAULT_LOCALE } from "@/i18n/config";
 
-const blogs = (await getCollection("blogs")).sort(
-	(a, b) =>
-		new Date(b.data.publishedDate).valueOf() -
-		new Date(a.data.publishedDate).valueOf(),
-);
+Astro.redirect(`/${DEFAULT_LOCALE}`);
 ---
-
-<Layout>
-	<main
-		class="mx-auto my-5 flex flex-col max-sm:px-4 sm:max-w-sm md:max-w-xl lg:max-w-3xl"
-	>
-		<h1 class="mb-4 text-left text-3xl max-sm:text-2xl">Blogs</h1>
-		<PostList blogs={blogs} />
-	</main>
-</Layout>

@@ -1,14 +1,16 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import Post from "@/components/Post.astro";
+import type { LocaleCode } from "@/i18n/config";
 
 type Props = {
 	blogs: CollectionEntry<"blogs">[];
+	locale: LocaleCode;
 };
 
-const { blogs } = Astro.props;
+const { blogs, locale } = Astro.props;
 ---
 
 <div class="group space-y-2">
-	{blogs.map((blog) => <Post blog={blog} />)}
+	{blogs.map((blog) => <Post blog={blog} locale={locale} />)}
 </div>

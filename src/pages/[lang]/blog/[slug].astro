@@ -8,6 +8,7 @@ import PostInfo from "@/components/PostInfo.astro";
 import type { MarkdownHeading } from "astro";
 import TableOfContents from "@/components/TableOfContents.astro";
 import ReadingIndicator from "@/components/ReadingIndicator.astro";
+import type { LocaleCode } from "@/i18n/config";
 
 export const getStaticPaths = async () => {
 	const blogs = await getCollection("blogs");
@@ -18,12 +19,32 @@ export const getStaticPaths = async () => {
 		),
 	);
 
+	const translationsByKey = blogs.reduce(
+		(map, entry) => {
+			const key = entry.data.translationKey;
+			const list = map.get(key) ?? [];
+			list.push(entry);
+			map.set(key, list);
+			return map;
+		},
+		new Map<string, CollectionEntry<"blogs">[]>(),
+	);
+
 	return blogs.map((blog, index) => {
+		const related = translationsByKey.get(blog.data.translationKey) ?? [];
+	const translations: Partial<Record<LocaleCode, string>> = Object.fromEntries(
+		related.map((entry) => [
+			entry.data.locale,
+			`/${entry.data.locale}/blog/${entry.data.slugSegment}`,
+		]),
+		);
+
 		return {
-			params: {
-				slug: blog.slug,
+				params: {
+					lang: blog.data.locale,
+					slug: blog.data.slugSegment,
 			},
-			props: { blog, headings: headings[index] },
+			props: { blog, headings: headings[index], translations },
 		};
 	});
 };
@@ -31,9 +52,10 @@ export const getStaticPaths = async () => {
 type Props = {
 	blog: CollectionEntry<"blogs">;
 	headings: MarkdownHeading[];
+	translations: Partial<Record<LocaleCode, string>>;
 };
 
-const { blog, headings } = Astro.props;
+const { blog, headings, translations } = Astro.props;
 const { Content } = await blog.render();
 
 const { title, excerpt, coverImage, publishedDate, tags, author, avatar } =
@@ -45,7 +67,13 @@ const coverImageURL =
 	typeof coverImage === "string" ? coverImage : coverImage?.src;
 ---
 
-<Layout title={title} description={excerpt} image={coverImageURL}>
+<Layout
+	title={title}
+	description={excerpt}
+	image={coverImageURL}
+	locale={blog.data.locale}
+	translations={translations}
+>
 	<ReadingIndicator slot="reading-indicator" />
 	<main
 		id="main-content"

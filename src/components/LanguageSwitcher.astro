@@ -1,0 +1,154 @@
+---
+import type { LanguageOption, LocaleCode } from "@/i18n/config";
+
+interface Props {
+	locale: LocaleCode;
+	options: LanguageOption[];
+}
+
+const { locale, options } = Astro.props;
+
+const activeOption = options.find((option) => option.code === locale) ?? options[0];
+---
+
+<div class="relative group/lang" data-language-switcher>
+	<button
+		type="button"
+		data-language-toggle
+		aria-haspopup="true"
+		aria-expanded="false"
+		class="group flex items-center gap-2 rounded-full border border-foreground/20 bg-background/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-foreground/65 transition hover:border-foreground/50 hover:text-foreground dark:bg-muted/40"
+	>
+		<svg
+			class="h-3.5 w-3.5 text-foreground/60 group-hover:text-foreground"
+			viewBox="0 0 20 20"
+			fill="none"
+			aria-hidden="true"
+		>
+			<path
+				d="M10 1.667c-4.6 0-8.333 3.733-8.333 8.333s3.733 8.333 8.333 8.333 8.333-3.733 8.333-8.333S14.6 1.667 10 1.667Zm0 0c1.367 1.733 2.083 4.233 2.083 8.333 0 4.1-.716 6.6-2.083 8.333m0-16.666C8.633 3.033 7.917 5.533 7.917 9.633c0 4.1.716 6.6 2.083 8.333m-6.25-12.5h12.5m-12.5 8.334h12.5"
+				stroke="currentColor"
+				stroke-width="1.2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+		</svg>
+		<span class="text-[0.7rem] tracking-wider text-foreground/60 group-hover:text-foreground">
+			{locale.toUpperCase()}
+		</span>
+		<svg
+			class="h-3 w-3 text-foreground/40 transition group-data-[open=true]/lang:rotate-180"
+			viewBox="0 0 12 12"
+			fill="none"
+			aria-hidden="true"
+		>
+			<path
+				d="M3 4.5 6 7.5 9 4.5"
+				stroke="currentColor"
+				stroke-width="1.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+		</svg>
+	</button>
+	<div
+		data-language-menu
+		data-open="false"
+		class="group/menu pointer-events-none invisible absolute right-0 z-50 mt-3 w-48 -translate-y-1 rounded-2xl border border-foreground/10 bg-background/95 p-3 opacity-0 shadow-xl ring-1 ring-foreground/5 backdrop-blur-xl transition-all duration-200 data-[open=true]:pointer-events-auto data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100 dark:bg-muted/80"
+	>
+		<p class="px-2 pb-2 text-[0.6rem] font-semibold uppercase tracking-[0.4em] text-foreground/50">
+			Language
+		</p>
+		<ul class="space-y-1">
+			{options.map((option) => (
+				<li>
+					<button
+						type="button"
+						data-language-option
+						data-href={option.href}
+						class={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-[0.7rem] font-medium uppercase tracking-wide transition ${
+							option.code === locale
+								? "border-foreground/20 bg-foreground/5 text-foreground"
+								: "border-transparent text-muted hover:border-foreground/15 hover:bg-foreground/5"
+						}`}
+					>
+						<span>{option.label}</span>
+						{option.code === locale && (
+							<span class="h-2.5 w-2.5 rounded-full bg-ultramarine/70"></span>
+						)}
+					</button>
+				</li>
+			))}
+		</ul>
+	</div>
+</div>
+
+<script>
+	const setupLanguageSwitcher = () => {
+		const wrapper = document.querySelector(
+			"[data-language-switcher]",
+		) as HTMLElement | null;
+		const toggle = wrapper?.querySelector<HTMLButtonElement>(
+			"[data-language-toggle]",
+		);
+		const menu = wrapper?.querySelector<HTMLElement>(
+			"[data-language-menu]",
+		);
+		const options = wrapper?.querySelectorAll<HTMLButtonElement>(
+			"[data-language-option]",
+		);
+
+		if (
+			!wrapper ||
+			!toggle ||
+			!menu ||
+			!options?.length ||
+			wrapper.dataset.bound === "true"
+		)
+			return;
+
+		const setOpen = (open: boolean) => {
+			menu.dataset.open = open ? "true" : "false";
+			toggle.setAttribute("aria-expanded", open ? "true" : "false");
+			if (open) {
+				wrapper.dataset.open = "true";
+			} else {
+				wrapper.dataset.open = "false";
+			}
+		};
+
+		const handleDocumentClick = (event: MouseEvent) => {
+			if (!wrapper.contains(event.target as Node)) {
+				setOpen(false);
+			}
+		};
+
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === "Escape") setOpen(false);
+		};
+
+		wrapper.dataset.bound = "true";
+		toggle.addEventListener("click", (event) => {
+			event.preventDefault();
+			const nextState = menu.dataset.open !== "true";
+			setOpen(nextState);
+		});
+
+		document.removeEventListener("click", handleDocumentClick);
+		document.removeEventListener("keydown", handleKeyDown);
+		document.addEventListener("click", handleDocumentClick);
+		document.addEventListener("keydown", handleKeyDown);
+
+		options.forEach((button) => {
+			button.addEventListener("click", () => {
+				const href = button.dataset.href;
+				if (!href) return;
+				setOpen(false);
+				window.location.assign(href);
+			});
+		});
+	};
+
+	document.removeEventListener("astro:page-load", setupLanguageSwitcher);
+	document.addEventListener("astro:page-load", setupLanguageSwitcher);
+</script>

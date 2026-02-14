@@ -4,6 +4,14 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @font-face {
+	font-family: "Pretendard Variable";
+	src: url("/fonts/PretendardVariable.woff2") format("woff2");
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
 	font-family: "Outfit", sans-serif;
 	src: url("/fonts/outfit.woff2") format("woff2");
 	font-weight: normal;
@@ -50,7 +58,8 @@
 }
 
 body {
-	font-family: "Outfit", sans-serif;
+	font-family: "Pretendard Variable", Pretendard, "Outfit", "Inter", -apple-system,
+		BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 h1,
@@ -59,7 +68,8 @@ h3,
 h4,
 h5,
 h6 {
-	font-family: "Inter", sans-serif;
+	font-family: "Pretendard Variable", Pretendard, "Outfit", "Inter", -apple-system,
+		BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .info-list > *:not(:last-child)::after {

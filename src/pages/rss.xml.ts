@@ -15,7 +15,7 @@ export async function GET(context: APIContext) {
 			description: post.data.excerpt,
 			author: post.data.author,
 			categories: post.data.tags,
-			link: `/blog/${post.slug}/`,
+				link: `/${post.data.locale}/blog/${post.data.slugSegment}/`,
 		})),
 	});
 }

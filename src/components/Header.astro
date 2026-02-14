@@ -2,8 +2,18 @@
 import Logo from "@/icons/logo.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 import SkipToContent from "./SkipToContent.astro";
+import LanguageSwitcher from "./LanguageSwitcher.astro";
+import type { LanguageOption, LocaleCode } from "@/i18n/config";
 
-const isBlogPage = Astro.url.pathname.startsWith("/blog/");
+interface Props {
+	locale: LocaleCode;
+	languageOptions: LanguageOption[];
+}
+
+const { locale, languageOptions } = Astro.props;
+
+const isBlogPage = Astro.url.pathname.includes("/blog/");
+const blogLabel = locale === "ko" ? "블로그" : "Blogs";
 ---
 
 <header
@@ -14,14 +24,15 @@ const isBlogPage = Astro.url.pathname.startsWith("/blog/");
 	<nav
 		class="mx-auto flex h-16 items-center justify-between transition-[height,padding] duration-200 ease-out max-sm:px-4 sm:max-w-sm md:max-w-xl lg:max-w-3xl group-data-[scrolled=true]/header:h-14"
 	>
-		<a href="/" class="flex items-center space-x-1.5">
-			<Logo class="h-6 w-6 rounded-full p-0.5" />
-		</a>
-		<div class="flex items-center space-x-4">
-			<a href="/">Blogs</a>
-			<ThemeToggle />
-		</div>
-	</nav>
+			<a href={`/${locale}`} class="flex items-center space-x-1.5">
+				<Logo class="h-6 w-6 rounded-full p-0.5" />
+			</a>
+			<div class="flex items-center space-x-4">
+				<a href={`/${locale}`}>{blogLabel}</a>
+				<LanguageSwitcher locale={locale} options={languageOptions} />
+				<ThemeToggle />
+			</div>
+		</nav>
 </header>
 
 <script>

@@ -72,7 +72,7 @@ Deployed with [Vercel](https://vercel.com) at [kiri-ten.vercel.app](https://kiri
 
 1. **Create a new Markdown file**
 
-   Add a new `.mdx` file in the `src/content/blogs/` directory. The filename will be used as the URL slug.
+   Add a new `.mdx` file inside the language folder under `src/content/blogs/<lang>/`. For example, `src/content/blogs/en/` for English or `src/content/blogs/ko/` for Korean.
 
 2. **Add frontmatter**
 
@@ -82,11 +82,14 @@ Deployed with [Vercel](https://vercel.com) at [kiri-ten.vercel.app](https://kiri
    ---
    title: Your Post Title
    author: Author Name
-   avatar: ./images/default-avatar.webp
+   avatar: ../images/default-avatar.webp
    tags: ["Tag 1", "Tag 2"]
    publishedDate: 2025-10-02
-   coverImage: ./images/default-background.webp
+   coverImage: ../images/default-background.webp
    excerpt: A brief summary of your post.
+   locale: en # or ko
+   translationKey: shared-identifier-for-all-locales
+   slugSegment: readable-url-slug
    ---
    ```
 
@@ -94,7 +97,7 @@ Deployed with [Vercel](https://vercel.com) at [kiri-ten.vercel.app](https://kiri
 
 3. **Write your content**
 
-   Use standard Markdown syntax to write your post. You can also include JSX components if needed.
+   Use standard Markdown syntax to write your post. For another language, create a file with the same `translationKey` so the language switcher can route readers to the matching translation.
 
 ---
 
