@@ -18,7 +18,7 @@ const blogLabel = locale === "ko" ? "블로그" : "Blogs";
 
 <header
 	data-site-header
-	class="group/header bg-background/70 text-foreground/80 text-md sticky top-0 z-40 mb-10 w-full border-b border-foreground/5 transition-all duration-200 ease-out data-[scrolled=true]:bg-background data-[scrolled=true]:text-foreground data-[scrolled=true]:shadow-sm dark:bg-background/60 dark:border-foreground/10 dark:data-[scrolled=true]:bg-muted/40"
+	class="group/header text-foreground/80 text-md sticky top-0 z-40 mb-10 w-full border-b border-foreground/5 transition-all duration-200 ease-out bg-background data-[scrolled=true]:bg-background data-[scrolled=true]:text-foreground data-[scrolled=true]:shadow-sm dark:bg-[#050505] dark:border-foreground/10 dark:data-[scrolled=true]:bg-[#0b0b0b]"
 >
 	{isBlogPage && <SkipToContent slot="skip-to-content" />}
 	<nav

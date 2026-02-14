@@ -60,11 +60,11 @@ const labelId = `language-label-${locale}`;
 		id={menuId}
 		role="menu"
 		aria-labelledby={labelId}
-		class="group/menu pointer-events-none invisible absolute right-0 z-50 mt-3 w-48 -translate-y-1 rounded-2xl border border-foreground/10 bg-background/95 p-3 opacity-0 shadow-xl ring-1 ring-foreground/5 backdrop-blur-xl transition-all duration-200 data-[open=true]:pointer-events-auto data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100 dark:bg-muted/80"
+		class="group/menu pointer-events-none invisible absolute right-0 z-50 mt-3 w-48 -translate-y-1 rounded-2xl border border-foreground/10 bg-background/98 p-3 opacity-0 shadow-xl ring-1 ring-foreground/5 transition-all duration-200 data-[open=true]:pointer-events-auto data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100 dark:bg-[#0d0d0d] dark:border-foreground/20"
 	>
 		<p
 			id={labelId}
-			class="px-2 pb-2 text-[0.6rem] font-semibold uppercase tracking-[0.4em] text-foreground/50"
+			class="px-2 pb-2 text-[0.6rem] font-semibold uppercase tracking-[0.35em] text-foreground/60"
 		>
 			Language
 		</p>
@@ -81,13 +81,13 @@ const labelId = `language-label-${locale}`;
 						aria-checked={option.code === locale}
 						class={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-[0.7rem] font-medium uppercase tracking-wide transition ${
 							option.code === locale
-								? "border-foreground/20 bg-foreground/5 text-foreground"
-								: "border-transparent text-muted hover:border-foreground/15 hover:bg-foreground/5"
+								? "border-ultramarine/40 bg-ultramarine/10 text-foreground"
+								: "border-transparent text-foreground/70 hover:border-foreground/20 hover:bg-foreground/10"
 						}`}
 					>
 						<span>{option.label}</span>
 						{option.code === locale && (
-							<span class="h-2.5 w-2.5 rounded-full bg-ultramarine/70"></span>
+							<span class="h-2 w-2 rounded-full bg-ultramarine"></span>
 						)}
 					</button>
 				</li>
