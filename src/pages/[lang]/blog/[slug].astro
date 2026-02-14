@@ -9,6 +9,7 @@ import type { MarkdownHeading } from "astro";
 import TableOfContents from "@/components/TableOfContents.astro";
 import ReadingIndicator from "@/components/ReadingIndicator.astro";
 import type { LocaleCode } from "@/i18n/config";
+import { getSlugSegment } from "@/utils/content";
 
 export const getStaticPaths = async () => {
 	const blogs = await getCollection("blogs");
@@ -32,17 +33,18 @@ export const getStaticPaths = async () => {
 
 	return blogs.map((blog, index) => {
 		const related = translationsByKey.get(blog.data.translationKey) ?? [];
-	const translations: Partial<Record<LocaleCode, string>> = Object.fromEntries(
-		related.map((entry) => [
-			entry.data.locale,
-			`/${entry.data.locale}/blog/${entry.data.slugSegment}`,
-		]),
+		const translations: Partial<Record<LocaleCode, string>> = Object.fromEntries(
+			related.map((entry) => [
+				entry.data.locale,
+				`/${entry.data.locale}/blog/${getSlugSegment(entry)}`,
+			]),
 		);
+		const slugSegment = getSlugSegment(blog);
 
 		return {
-				params: {
-					lang: blog.data.locale,
-					slug: blog.data.slugSegment,
+			params: {
+				lang: blog.data.locale,
+				slug: slugSegment,
 			},
 			props: { blog, headings: headings[index], translations },
 		};
@@ -95,6 +97,7 @@ const coverImageURL =
 					author={author}
 					publishedDate={publishedDate}
 					wordCount={wordCount}
+					locale={blog.data.locale}
 				/>
 				<PostTags tags={tags} />
 			</div>

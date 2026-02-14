@@ -13,11 +13,7 @@ const locale = resolveLocale(Astro.params.lang);
 
 const blogs = (await getCollection("blogs"))
 	.filter((entry) => entry.data.locale === locale)
-	.sort(
-		(a, b) =>
-			new Date(b.data.publishedDate).valueOf() -
-			new Date(a.data.publishedDate).valueOf(),
-	);
+	.sort((a, b) => b.data.publishedDate.valueOf() - a.data.publishedDate.valueOf());
 
 const headingText = locale === "ko" ? "블로그" : "Blogs";
 ---

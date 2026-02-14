@@ -17,15 +17,8 @@ const postsCollection = defineCollection({
 		excerpt: z.string().optional(),
 			locale: z.enum(localeCodes),
 			translationKey: z.string(),
-			slugSegment: z.string(),
-		publishedDate: z.date().transform((date) =>
-			date.toLocaleDateString(undefined, {
-				year: "numeric",
-					month: "short",
-					day: "numeric",
-				}),
-			),
-		}),
+			publishedDate: z.date(),
+			}),
 });
 
 export const collections = {

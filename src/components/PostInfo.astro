@@ -1,17 +1,26 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { Image } from "astro:assets";
+import type { LocaleCode } from "@/i18n/config";
 
 interface Props {
 	avatar: CollectionEntry<"blogs">["data"]["avatar"];
 	author: CollectionEntry<"blogs">["data"]["author"];
 	publishedDate: CollectionEntry<"blogs">["data"]["publishedDate"];
 	wordCount: number;
+	locale: LocaleCode;
 }
 
-const { avatar, author, publishedDate, wordCount } = Astro.props;
+const { avatar, author, publishedDate, wordCount, locale } = Astro.props;
 const totalTimeToRead = Math.ceil(wordCount / 200);
 const totalTimeToSkim = Math.ceil(wordCount / 500);
+
+const readableDate = new Intl.DateTimeFormat(locale, {
+	year: "numeric",
+	month: "short",
+	day: "numeric",
+}).format(publishedDate);
+const isoDate = publishedDate.toISOString();
 ---
 
 <div
@@ -31,8 +40,8 @@ const totalTimeToSkim = Math.ceil(wordCount / 500);
 		}
 		{author}
 	</div>
-	<time datetime={publishedDate}>
-		Published on {publishedDate}
+	<time datetime={isoDate}>
+		Published on {readableDate}
 	</time>
 	<p>
 		{totalTimeToSkim} min read ({totalTimeToRead} min read total)

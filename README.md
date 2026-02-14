@@ -89,7 +89,6 @@ Deployed with [Vercel](https://vercel.com) at [kiri-ten.vercel.app](https://kiri
    excerpt: A brief summary of your post.
    locale: en # or ko
    translationKey: shared-identifier-for-all-locales
-   slugSegment: readable-url-slug
    ---
    ```
 

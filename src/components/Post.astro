@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import type { LocaleCode } from "@/i18n/config";
+import { getSlugSegment } from "@/utils/content";
 
 type Props = {
 	blog: CollectionEntry<"blogs">;
@@ -9,13 +10,20 @@ type Props = {
 
 const { blog, locale } = Astro.props;
 const { title, publishedDate } = blog.data;
+const slugSegment = getSlugSegment(blog);
+
+const formattedDate = new Intl.DateTimeFormat(locale, {
+	year: "numeric",
+	month: "short",
+	day: "numeric",
+}).format(publishedDate);
 ---
 
 <article
 	class="group/article flex w-full items-baseline justify-between transition-opacity duration-150 ease-in-out group-hover:opacity-45 hover:opacity-100"
 >
 		<a
-			href={`/${locale}/blog/${blog.data.slugSegment}`}
+			href={`/${locale}/blog/${slugSegment}`}
 		class="text-muted inline-block text-pretty"
 	>
 		<h2
@@ -24,6 +32,6 @@ const { title, publishedDate } = blog.data;
 		/>
 	</a>
 	<p class="text-muted text-sm whitespace-nowrap">
-		{publishedDate}
+		{formattedDate}
 	</p>
 </article>

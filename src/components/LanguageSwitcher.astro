@@ -8,15 +8,18 @@ interface Props {
 
 const { locale, options } = Astro.props;
 
-const activeOption = options.find((option) => option.code === locale) ?? options[0];
+const menuId = `language-menu-${locale}`;
+const labelId = `language-label-${locale}`;
 ---
 
 <div class="relative group/lang" data-language-switcher>
 	<button
 		type="button"
 		data-language-toggle
-		aria-haspopup="true"
+		aria-haspopup="menu"
 		aria-expanded="false"
+		aria-controls={menuId}
+		id={`language-toggle-${locale}`}
 		class="group flex items-center gap-2 rounded-full border border-foreground/20 bg-background/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-foreground/65 transition hover:border-foreground/50 hover:text-foreground dark:bg-muted/40"
 	>
 		<svg
@@ -54,18 +57,28 @@ const activeOption = options.find((option) => option.code === locale) ?? options
 	<div
 		data-language-menu
 		data-open="false"
+		id={menuId}
+		role="menu"
+		aria-labelledby={labelId}
 		class="group/menu pointer-events-none invisible absolute right-0 z-50 mt-3 w-48 -translate-y-1 rounded-2xl border border-foreground/10 bg-background/95 p-3 opacity-0 shadow-xl ring-1 ring-foreground/5 backdrop-blur-xl transition-all duration-200 data-[open=true]:pointer-events-auto data-[open=true]:visible data-[open=true]:translate-y-0 data-[open=true]:opacity-100 dark:bg-muted/80"
 	>
-		<p class="px-2 pb-2 text-[0.6rem] font-semibold uppercase tracking-[0.4em] text-foreground/50">
+		<p
+			id={labelId}
+			class="px-2 pb-2 text-[0.6rem] font-semibold uppercase tracking-[0.4em] text-foreground/50"
+		>
 			Language
 		</p>
-		<ul class="space-y-1">
+		<ul class="space-y-1" role="none">
 			{options.map((option) => (
-				<li>
+				<li role="none">
 					<button
 						type="button"
 						data-language-option
 						data-href={option.href}
+						data-locale={option.code}
+						role="menuitemradio"
+						tabindex="-1"
+						aria-checked={option.code === locale}
 						class={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-[0.7rem] font-medium uppercase tracking-wide transition ${
 							option.code === locale
 								? "border-foreground/20 bg-foreground/5 text-foreground"
@@ -84,7 +97,10 @@ const activeOption = options.find((option) => option.code === locale) ?? options
 </div>
 
 <script>
+	let cleanupLanguageSwitcher: (() => void) | null = null;
+
 	const setupLanguageSwitcher = () => {
+		cleanupLanguageSwitcher?.();
 		const wrapper = document.querySelector(
 			"[data-language-switcher]",
 		) as HTMLElement | null;
@@ -107,13 +123,28 @@ const activeOption = options.find((option) => option.code === locale) ?? options
 		)
 			return;
 
+		const optionButtons = Array.from(options);
+
+		const focusOption = (index: number) => {
+			if (!optionButtons.length) return;
+			const normalizedIndex = (index + optionButtons.length) % optionButtons.length;
+			optionButtons[normalizedIndex]?.focus();
+		};
+
 		const setOpen = (open: boolean) => {
 			menu.dataset.open = open ? "true" : "false";
 			toggle.setAttribute("aria-expanded", open ? "true" : "false");
+			wrapper.dataset.open = open ? "true" : "false";
 			if (open) {
-				wrapper.dataset.open = "true";
+				requestAnimationFrame(() => {
+					const activeOption =
+						(optionButtons.find((button) =>
+							button.getAttribute("aria-checked") === "true",
+						) ?? optionButtons[0]);
+					activeOption?.focus();
+				});
 			} else {
-				wrapper.dataset.open = "false";
+				requestAnimationFrame(() => toggle.focus());
 			}
 		};
 
@@ -123,31 +154,98 @@ const activeOption = options.find((option) => option.code === locale) ?? options
 			}
 		};
 
-		const handleKeyDown = (event: KeyboardEvent) => {
+		const handleDocumentKeyDown = (event: KeyboardEvent) => {
 			if (event.key === "Escape") setOpen(false);
 		};
 
+		const handleToggleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
+				event.preventDefault();
+				setOpen(true);
+			}
+		};
+
+		const handleMenuKeyDown = (event: KeyboardEvent) => {
+			const currentIndex = optionButtons.indexOf(
+				event.target as HTMLButtonElement,
+			);
+			const baseIndex = currentIndex === -1 ? 0 : currentIndex;
+			switch (event.key) {
+				case "ArrowDown": {
+					event.preventDefault();
+					focusOption(baseIndex + 1);
+					break;
+				}
+				case "ArrowUp": {
+					event.preventDefault();
+					focusOption(baseIndex - 1);
+					break;
+				}
+				case "Home": {
+					event.preventDefault();
+					focusOption(0);
+					break;
+				}
+				case "End": {
+					event.preventDefault();
+					focusOption(optionButtons.length - 1);
+					break;
+				}
+				case "Tab": {
+					setOpen(false);
+					break;
+				}
+				case "Enter":
+				case " ": {
+					event.preventDefault();
+					(event.target as HTMLButtonElement)?.click();
+					break;
+				}
+			}
+		};
+
+		const handleOptionClick = (event: MouseEvent) => {
+			const button = event.currentTarget as HTMLButtonElement | null;
+			if (!button) return;
+			const href = button.dataset.href;
+			if (!href) return;
+			setOpen(false);
+			window.location.assign(href);
+		};
+
 		wrapper.dataset.bound = "true";
-		toggle.addEventListener("click", (event) => {
+		const handleToggleClick = (event: MouseEvent) => {
 			event.preventDefault();
 			const nextState = menu.dataset.open !== "true";
 			setOpen(nextState);
-		});
+		};
 
-		document.removeEventListener("click", handleDocumentClick);
-		document.removeEventListener("keydown", handleKeyDown);
+		toggle.addEventListener("click", handleToggleClick);
+		toggle.addEventListener("keydown", handleToggleKeyDown);
+		menu.addEventListener("keydown", handleMenuKeyDown);
 		document.addEventListener("click", handleDocumentClick);
-		document.addEventListener("keydown", handleKeyDown);
+		document.addEventListener("keydown", handleDocumentKeyDown);
+		optionButtons.forEach((button) =>
+			button.addEventListener("click", handleOptionClick),
+		);
 
-		options.forEach((button) => {
-			button.addEventListener("click", () => {
-				const href = button.dataset.href;
-				if (!href) return;
-				setOpen(false);
-				window.location.assign(href);
-			});
-		});
+		cleanupLanguageSwitcher = () => {
+			toggle.removeEventListener("click", handleToggleClick);
+			toggle.removeEventListener("keydown", handleToggleKeyDown);
+			menu.removeEventListener("keydown", handleMenuKeyDown);
+			document.removeEventListener("click", handleDocumentClick);
+			document.removeEventListener("keydown", handleDocumentKeyDown);
+			optionButtons.forEach((button) =>
+				button.removeEventListener("click", handleOptionClick),
+			);
+			wrapper.dataset.bound = "false";
+		};
 	};
+
+	document.addEventListener("astro:beforeunload", () => {
+		cleanupLanguageSwitcher?.();
+		cleanupLanguageSwitcher = null;
+	});
 
 	document.removeEventListener("astro:page-load", setupLanguageSwitcher);
 	document.addEventListener("astro:page-load", setupLanguageSwitcher);
